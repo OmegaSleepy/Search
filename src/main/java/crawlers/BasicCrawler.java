@@ -22,7 +22,7 @@ public class BasicCrawler implements Runnable {
     @Override
     public void run() {
         Connection connection = Jsoup.connect(url);
-        connection.header("User-Agent", "OmegaBot/0.1 (+https://github.com/OmegaSleepy/Search");
+        connection.header("User-Agent", "OmegaBot/0.0.1 (+https://github.com/OmegaSleepy/Search");
         connection.header("Accept", "text/html");
 
         try {

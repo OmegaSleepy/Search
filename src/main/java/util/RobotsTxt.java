@@ -7,12 +7,23 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RobotsTxt {
 
     private RobotsTxt(){};
 
-    public static RobotInformation robotsTxtInformation(String url) throws IOException, InterruptedException {
+    private static final Map<String, RobotInformation> cache = new ConcurrentHashMap<>();
+
+    public static RobotInformation getInfoByUrl(String url) throws IOException, InterruptedException {
+        if(cache.containsKey(url)){
+            return cache.get(url);
+        }
+        return robotsTxtInformation(url);
+    }
+
+    private static RobotInformation robotsTxtInformation(String url) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url+"/robots.txt"))
@@ -24,6 +35,7 @@ public class RobotsTxt {
         response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
+            cache.put(url, new RobotInformation(List.of(), 600));
             return new RobotInformation(List.of(), 600);
         }
 
@@ -49,6 +61,7 @@ public class RobotsTxt {
             }
         }
 
+        cache.put(url, new RobotInformation(bannedUrl, miliseconds));
         return new RobotInformation(bannedUrl, miliseconds);
     }
 }
