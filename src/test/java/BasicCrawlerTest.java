@@ -1,5 +1,6 @@
 import crawlers.BasicCrawler;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -10,6 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BasicCrawlerTest {
+
+    static boolean isLocal() {
+        return System.getenv("CI") == null;
+    }
+
     PrintStream out = System.out;
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -39,14 +45,15 @@ public class BasicCrawlerTest {
         System.setOut(out);
     }
 
-    @Test
-    public void testBasicCrawlerMon(){
+    @Test @EnabledIf("isLocal")
+    public void testBasicCrawlerMon() throws InterruptedException {
         BasicCrawler crawler = new BasicCrawler("https://www.mon.bg/");
         crawler.run();
+        Thread.sleep(200);
     }
 
-    @Test
-    public void testBasicCrawlerBan(){
+    @Test @EnabledIf("isLocal")
+    public void testBasicCrawlerBan() throws InterruptedException {
         BasicCrawler crawler = new BasicCrawler("https://www.bas.bg/");
         crawler.run();
     }

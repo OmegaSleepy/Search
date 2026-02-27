@@ -1,17 +1,21 @@
-import crawlers.BasicCrawler;
 import crawlers.RespectableCrawler;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RespectCrawlerTest {
+
+    static boolean isLocal() {
+        return System.getenv("CI") == null;
+    }
+
 
     PrintStream out = System.out;
 
@@ -42,13 +46,13 @@ public class RespectCrawlerTest {
         System.setOut(out);
     }
 
-    @Test
+    @Test @EnabledIf("isLocal")
     public void testRPCrawlerMon(){
         RespectableCrawler crawler = new RespectableCrawler("https://www.mon.bg/");
         crawler.run();
     }
 
-    @Test
+    @Test @EnabledIf("isLocal")
     public void testRPCrawlerBan(){
         RespectableCrawler crawler = new RespectableCrawler("https://www.bas.bg/");
         crawler.run();
